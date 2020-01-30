@@ -18,3 +18,7 @@ Route::middleware('auth:api')->get('/patient', function (Request $request) {
 });
 
 Route::resource('patient', 'PatientController');
+
+Route::group(['prefix' => 'doctor'], function(){
+    Route::resource('doctor', 'DoctorController');
+});
