@@ -5,6 +5,7 @@ namespace Modules\Patient\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Modules\Patient\Entities\user_family_member;
 
 class PatientController extends Controller
 {
@@ -14,7 +15,24 @@ class PatientController extends Controller
      */
     public function index()
     {
-        return view('patient::index');
+        try {
+            $users = user_family_member::join('users', 'user_family_members.user_id', '=', 'users.id')
+                ->select('email','name','phone','nik')
+                ->get();
+            $patient = user_family_member::get();
+            // $user = DB::table('users')->pluck('name', 'email', 'nik', 'phone' );
+            return response()->json([
+                'status' => "Here's your data",
+                'patient' => $patient, [
+                    'from user' => $users
+                ]  
+            ],200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'Failed to retrieve data',
+                'data' => null
+            ],400);
+        }
     }
 
     /**
@@ -33,7 +51,25 @@ class PatientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $patient = user_family_member::create([
+                'user_id' => $request->user_id,
+                'family_name' => $request->family_name,
+                'family_nik' => $request->family_nik,
+                'gender' => $request->gender,
+                'date_of_birth' => $request->date_of_birth,
+                'place_of_birth' => $request->place_of_birth
+            ]);
+            return response()->json([
+                'status' => 'Data successfully added',
+                'data' => $patient
+            ],200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'Data failed to be added',
+                'data' => null
+            ]);
+        }
     }
 
     /**
@@ -64,7 +100,26 @@ class PatientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            $patient = user_family_member::find($id);
+            $patient->user_id = $request->user_id;
+            $patient->family_name = $request->family_name;
+            $patient->family_nik = $request->family_nik;
+            $patient->gender = $request->gender;
+            $patient->date_of_birth = $request->date_of_birth;
+            $patient->place_of_birth = $request->place_of_birth;
+            $patient->save();
+
+            return response()->json([
+                'status' => 'Data successfully updated',
+                'data' => $patient
+            ],200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'Data failed to be updated',
+                'data' => $patient
+            ],400);
+        }
     }
 
     /**
@@ -74,6 +129,20 @@ class PatientController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $allpatient = user_family_member::get();
+            $patient = user_family_member::find($id);
+            $patient->delete();
+            $patient->save();
+            return response()->json([
+                'status' => 'ok',
+                'data' => $patient 
+            ],200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'data' => $allpatient
+            ],400);
+        }
     }
 }

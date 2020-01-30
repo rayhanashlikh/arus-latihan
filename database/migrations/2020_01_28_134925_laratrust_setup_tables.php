@@ -15,7 +15,6 @@ class LaratrustSetupTables extends Migration
         Schema::create('roles', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->unique();
-            $table->string('display_name')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
         });
@@ -27,12 +26,13 @@ class LaratrustSetupTables extends Migration
             $table->string('display_name')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
 
         // Create table for associating roles to users and teams (Many To Many Polymorphic)
         Schema::create('role_user', function (Blueprint $table) {
-            $table->unsignedInteger('role_id');
             $table->unsignedInteger('user_id');
+            $table->unsignedInteger('role_id');
             $table->string('user_type');
 
             $table->foreign('role_id')->references('id')->on('roles')
@@ -40,6 +40,7 @@ class LaratrustSetupTables extends Migration
 
             $table->primary(['user_id', 'role_id', 'user_type']);
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
 
         // Create table for associating permissions to users (Many To Many Polymorphic)
@@ -53,6 +54,7 @@ class LaratrustSetupTables extends Migration
 
             $table->primary(['user_id', 'permission_id', 'user_type']);
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
 
         // Create table for associating permissions to roles (Many-to-Many)
@@ -67,6 +69,7 @@ class LaratrustSetupTables extends Migration
 
             $table->primary(['permission_id', 'role_id']);
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

@@ -23,7 +23,7 @@ class UserFamilyMembers extends Migration
                 ->onUpdate('cascade');
             $table->string('name');
             $table->integer('nik');
-            $table->enum('enum', ['male', 'female']);
+            $table->enum('gender', ['male', 'female']);
             $table->date('date_of_birth');
             $table->string('place_of_birth');
             $table->timestamps();
