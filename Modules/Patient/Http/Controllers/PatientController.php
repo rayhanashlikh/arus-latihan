@@ -16,21 +16,18 @@ class PatientController extends Controller
     public function index()
     {
         try {
-            $users = user_family_member::join('users', 'user_family_members.user_id', '=', 'users.id')
-                ->select('email','name','phone','nik')
-                ->get();
-            $patient = user_family_member::get();
+            $patient = user_family_member::join('users', 'user_family_members.user_id', '=', 'users.id')
+                ->select('users.name as user_name','email','users.nik as user_nik','phone','user_family_members.name as family_name','user_family_members.nik as family_nik','gender','date_of_birth','place_of_birth')
+                ->paginate(5);
             // $user = DB::table('users')->pluck('name', 'email', 'nik', 'phone' );
             return response()->json([
                 'status' => "Here's your data",
-                'patient' => $patient, [
-                    'from user' => $users
-                ]  
+                'patient' => $patient
             ],200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'Failed to retrieve data',
-                'data' => null
+                'data' => $th->getMessage()
             ],400);
         }
     }
@@ -54,8 +51,8 @@ class PatientController extends Controller
         try {
             $patient = user_family_member::create([
                 'user_id' => $request->user_id,
-                'family_name' => $request->family_name,
-                'family_nik' => $request->family_nik,
+                'name' => $request->name,
+                'nik' => $request->nik,
                 'gender' => $request->gender,
                 'date_of_birth' => $request->date_of_birth,
                 'place_of_birth' => $request->place_of_birth
@@ -67,7 +64,7 @@ class PatientController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'Data failed to be added',
-                'data' => null
+                'data' => $th->getMessage()
             ]);
         }
     }
@@ -103,8 +100,8 @@ class PatientController extends Controller
         try {
             $patient = user_family_member::find($id);
             $patient->user_id = $request->user_id;
-            $patient->family_name = $request->family_name;
-            $patient->family_nik = $request->family_nik;
+            $patient->name = $request->name;
+            $patient->nik = $request->nik;
             $patient->gender = $request->gender;
             $patient->date_of_birth = $request->date_of_birth;
             $patient->place_of_birth = $request->place_of_birth;
@@ -117,7 +114,7 @@ class PatientController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'Data failed to be updated',
-                'data' => $patient
+                'data' => $th->getMessage()
             ],400);
         }
     }
@@ -130,18 +127,17 @@ class PatientController extends Controller
     public function destroy($id)
     {
         try {
-            $allpatient = user_family_member::get();
             $patient = user_family_member::find($id);
             $patient->delete();
             $patient->save();
             return response()->json([
-                'status' => 'ok',
+                'status' => 'Data Successfully Deleted',
                 'data' => $patient 
             ],200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'error',
-                'data' => $allpatient
+                'data' => $patient
             ],400);
         }
     }

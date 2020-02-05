@@ -17,8 +17,4 @@ Route::middleware('auth:api')->get('/patient', function (Request $request) {
     return $request->user();
 });
 
-Route::resource('patient', 'PatientController');
-
-Route::group(['prefix' => 'doctor'], function(){
-    Route::resource('doctor', 'DoctorController');
-});
+Route::resource('patient', 'PatientController')->middleware('jwt.verify');

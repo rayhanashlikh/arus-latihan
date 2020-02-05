@@ -5,9 +5,9 @@ namespace Modules\Doctor\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Modules\Doctor\Modules\doctor;
+use Modules\Doctor\Entities\doctor_schedule;
 
-class DoctorController extends Controller
+class DoctorScheduleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +15,11 @@ class DoctorController extends Controller
      */
     public function index()
     {
-        return view('doctor::index');
+        try {
+            
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 
     /**

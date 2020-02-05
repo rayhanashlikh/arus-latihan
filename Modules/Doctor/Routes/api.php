@@ -16,3 +16,8 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/doctor', function (Request $request) {
     return $request->user();
 });
+
+Route::group(['prefix' => 'doctor', 'middleware' => 'jwt.verify'],function () {
+    Route::resource('doctorCategory', 'DoctorCategoryController');
+});
+
