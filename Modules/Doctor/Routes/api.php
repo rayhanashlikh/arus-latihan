@@ -19,7 +19,7 @@ Route::middleware('auth:api')->get('/doctor', function (Request $request) {
 
 Route::group(['prefix' => 'doctor', 'middleware' => 'jwt.verify'],function () {
     Route::resource('doctorCategory', 'Api\DoctorCategoryController');
-    // Route::resource('doctorData', 'Api\DoctorController');
+    Route::resource('doctorData', 'Api\DoctorController');
     Route::resource('doctorSchedule', 'Api\DoctorScheduleController');
 });
 

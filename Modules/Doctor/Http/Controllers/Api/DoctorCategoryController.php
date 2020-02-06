@@ -111,19 +111,6 @@ class DoctorCategoryController extends Controller
      */
     public function destroy($id)
     {
-        try {
-            $doctor_category = doctor_category::find($id);
-            $doctor_category->delete();
-            $doctor_category->save();
-            return response()->json([
-                'status' => 'Doctor Category deleted successfully',
-                'data' => $doctor_category
-            ],200);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 'Doctor Category could not be deleted',
-                'data' => $th->getMessage()
-            ]);
-        }
+        //
     }
 }
