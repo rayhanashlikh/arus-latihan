@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Doctor\Http\Controllers;
+namespace Modules\Doctor\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;

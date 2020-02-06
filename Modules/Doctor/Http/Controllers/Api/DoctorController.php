@@ -1,13 +1,13 @@
 <?php
 
-namespace Modules\Doctor\Http\Controllers;
+namespace Modules\Doctor\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Modules\Doctor\Entities\doctor_category;
+use Modules\Doctor\Entities\doctor;
 
-class DoctorCategoryController extends Controller
+class DoctorController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,10 +16,13 @@ class DoctorCategoryController extends Controller
     public function index()
     {
         try {
-            $doctor_category = doctor_category::paginate(5);
+            $doctor = doctor::join('users', 'doctors.user_id', '=', 'users.id')
+                ->join('doctor_categories', 'doctors.doctor_category_id', '=', 'doctor_categories.id')
+                ->select('users.name as doctor_name', 'users.email as doctor_email', 'users.nik as doctor_nik', 'users.phone as doctor_phone', 'doctor_categories.name as doctor_category_name')
+                ->paginate(5);
             return response()->json([
-                'status' => "Here's your doctor categories",
-                'data' => $doctor_category
+                'status' => "Here's the data of Doctors",
+                'data' => $doctor
             ],200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -35,7 +38,7 @@ class DoctorCategoryController extends Controller
      */
     public function create()
     {
-        
+        return view('doctor::create');
     }
 
     /**
@@ -46,16 +49,19 @@ class DoctorCategoryController extends Controller
     public function store(Request $request)
     {
         try {
-            $doctor_category = doctor_category::create(['name' => $request->name]);
+            $doctor = doctor::create([
+                'user_id' => $request->user_id,
+                'doctor_category_id' => $request->doctor_category_id
+            ]);
             return response()->json([
-                'status' => 'Category added successfully',
-                'data' => $doctor_category
+                'status' => 'Doctor successfully added',
+                'data' => $doctor 
             ],200);
         } catch (\Throwable $th) {
             return response()->json([
-                'status' => 'Category failed to be added',
+                'status' => 'Doctor failed to be added',
                 'data' => $th->getMessage()
-            ],400);
+            ]);
         }
     }
 
@@ -88,17 +94,17 @@ class DoctorCategoryController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $doctor_category = doctor_category::find($id);
-            $doctor_category->name = $request->name;
-            $doctor_category->save();
-
+            $doctor = doctor::find($id);
+            $doctor->user_id = $request->user_id;
+            $doctor->doctor_category_id = $request->doctor_category_id;
+            $doctor->save();
             return response()->json([
-                'status' => 'Category edited successfully ',
-                'data' => $doctor_category
+                'status' => 'Doctor successfully updated',
+                'data' => $doctor
             ],200);
         } catch (\Throwable $th) {
             return response()->json([
-                'status' => 'Category failed to be edited',
+                'status' => 'Doctor failed to be updated',
                 'data' => $th->getMessage()
             ],400);
         }
@@ -112,18 +118,17 @@ class DoctorCategoryController extends Controller
     public function destroy($id)
     {
         try {
-            $doctor_category = doctor_category::find($id);
-            $doctor_category->delete();
-            $doctor_category->save();
+            $doctor = doctor::find($id);
+            $doctor->save();
             return response()->json([
-                'status' => 'Doctor Category deleted successfully',
-                'data' => $doctor_category
+                'status' => 'Doctor data successfully deleted',
+                'data' => $doctor
             ],200);
         } catch (\Throwable $th) {
             return response()->json([
-                'status' => 'Doctor Category could not be deleted',
+                'status' => 'Doctor data failed to be updated',
                 'data' => $th->getMessage()
-            ]);
+            ],400);
         }
     }
 }
